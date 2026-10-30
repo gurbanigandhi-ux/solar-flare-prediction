@@ -79,14 +79,15 @@ tss_scorer = make_scorer(tss)
 def bootstrap_ci(y, proba, threshold: float, n_boot: int = 1000, block: int = 24, alpha: float = 0.05,
                  seed: int = 42) -> dict:
     """
-    Calculate bootstrap confidence intervals for evaluation metrics.
+Calculate bootstrap confidence intervals for evaluation metrics.
 
-    IMPORTANT: These confidence intervals are optimistic because the
-    original file order is not chronological. Therefore, block-based
-    resampling cannot reliably capture temporal dependence between
-    overlapping observation windows. Treat the intervals as optimistic
-    lower-bound uncertainty estimates, not definitive confidence intervals.
-    """
+IMPORTANT: These intervals use block bootstrap resampling with
+24-row blocks. However, the original file order is not chronological,
+and observation windows overlap heavily. Therefore, block resampling
+cannot reliably capture temporal dependence. Treat these intervals
+as optimistic uncertainty estimates, not definitive confidence intervals.
+"""
+    
     y = np.asarray(y).astype(int)
     pred = (np.asarray(proba) >= threshold).astype(int)
     n = len(y)

@@ -168,7 +168,9 @@ def make_report():
               f"| ROC-AUC | {_fmt(t['ROC_AUC'])} | {_fmt(b['ROC_AUC'])} |\n| PR-AUC | {_fmt(t['PR_AUC'])} | {_fmt(b['PR_AUC'])} |\n"
               f"| Brier skill score | {_fmt(t.get('BSS'))} | - |\n\n"
               + (f"95% block-bootstrap intervals on the test partition: TSS {fin['test_ci']['TSS'][0]:.3f} to {fin['test_ci']['TSS'][1]:.3f}, "
-                 f"recall {fin['test_ci']['recall'][0]:.3f} to {fin['test_ci']['recall'][1]:.3f} (logistic baseline TSS "
+                 f"recall {fin['test_ci']['recall'][0]:.3f} to {fin['test_ci']['recall'][1]:.3f} "
+"(block bootstrap, 24-row blocks; windows overlap heavily, so treat as optimistic). "
+f"(logistic baseline TSS "
                  f"{fin['baseline_test_ci']['TSS'][0]:.3f} to {fin['baseline_test_ci']['TSS'][1]:.3f}). If the intervals overlap, "
                  "the improvement over the baseline is not statistically convincing.\n\n" if "test_ci" in fin else "")
               + f"Confusion matrix (test): TP={t['TP']}, FN={t['FN']}, FP={t['FP']}, TN={t['TN']}\n\n"
