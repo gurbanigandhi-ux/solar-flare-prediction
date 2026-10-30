@@ -52,36 +52,23 @@ roughly 1-5% per partition and not wildly different between partitions; no "susp
 
 Labels are binary here, so there is no per-flare-class breakdown (the dashboard shows M vs N only).
 
-## Getting the real data - alternative: raw SWAN-SF (Harvard Dataverse, ~6 GB)
+## Dataset Used in the Final Experiment
 
-SWAN-SF (Space Weather ANalytics for Solar Flares) is the public benchmark: multivariate time series of
-magnetic-field parameters for 4,000+ active regions (May 2010 - 2018), 10,000+ flare reports, split into
-**five chronological partitions**. It is hosted on **Harvard Dataverse** (search "SWAN-SF"; published by the
-Georgia State University DMLab, Angryk et al. 2020). The raw download is ~6 GB, so the loader is built for that:
+This project uses the **Cleaned SWAN-SF Dataset** (EskandariNasab et al., 2024), specifically its five test partitions.
 
-- it reads **one file at a time** (low RAM) and can read **straight from the .zip files** - do not unzip;
-- it keeps **all M/X windows** but only a fraction of B/C/quiet windows (`--neg-frac`, default 0.05), deciding
-  from the file name *before* reading, so most of the 6 GB is never parsed;
-- it **caches** the parsed table in `data/processed/swansf_features.csv`, so you parse only once.
+The cleaned dataset provides preprocessed magnetic-field time-series data and corresponding flare labels. The final experiment uses these partitions to evaluate the model while avoiding the resampled training data.
 
-1. Put the downloaded partition files (zipped or unzipped) in `data/raw/swansf/`.
-2. **Check one file first** (open one CSV / look at a few file names). The loader assumes the flare class is the
-   first letter of the file name (X/M/C/B/N) and that the partition number appears in the folder or zip name
-   (`partition1`...). If not, edit `_parse_class()` / `_parse_partition()` in `src/data_loading.py`.
-3. Test on a small slice, then run for real:
-   ```bash
-   python -m src.train --source swansf --path data/raw/swansf --max-files 1500 --neg-frac 1.0 --quick
-   python -m src.train --source swansf --path data/raw/swansf --reload --n-iter 6
-   ```
-   The loader prints the parameter columns it uses and the columns it ignores - read that list and make sure nothing
-   that looks like a label is in the used list.
+**Dataset location:** Place the five data files and their corresponding label files in `data/raw/test/`.
 
-Because negatives are subsampled, the flare rate in the data is higher than in reality. **TSS, recall and false-alarm
-rate are not affected; precision and Brier score are.** The report states this automatically. For a stricter
-evaluation use `--neg-frac 1.0` (slow, large).
+The final experiment was conducted using:
 
-Columns whose names contain *time, id, noaa, harp, label, lat, lon* are dropped automatically so
-identifiers and label-like columns cannot leak into the features.
+```bash
+python -m src.train --source cleaned --path data/raw/test --neg-frac 0.25 --reload
+```
+
+### Note on Raw SWAN-SF
+
+The original raw SWAN-SF dataset is an alternative source dataset, but it was **not used for the final experiment or the reported performance metrics**. The results documented in this README correspond to the Cleaned SWAN-SF test partitions.
 
 **Other options**
 - Already have a table? `--source csv --path my.csv` (needs a `label` column, optionally `partition`, `flare_class`).
