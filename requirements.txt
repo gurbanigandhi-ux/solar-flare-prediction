@@ -1,0 +1,11 @@
+numpy
+pandas
+scipy
+scikit-learn
+xgboost
+shap
+joblib
+matplotlib
+plotly
+streamlit>=1.50
+tabulate
