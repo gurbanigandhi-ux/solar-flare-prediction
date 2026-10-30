@@ -151,3 +151,31 @@ Model performance should be compared with published SWAN-SF results using equiva
 - Investigate alternative prediction windows.
 - Study limb-region effects.
 - Compare class-imbalance strategies, including SMOTE and time-series GAN approaches.
+## Model Performance
+
+The final model was evaluated on Partition 5, using a threshold selected
+on the validation partition (Partition 4).
+
+| Metric | Result |
+|---|---:|
+| True Skill Statistic (TSS) | 0.8169 |
+| Heidke Skill Score (HSS) | 0.3213 |
+| Recall | 0.9909 |
+| Precision (sampled test set) | 0.2327 |
+| ROC-AUC | 0.9806 |
+| PR-AUC (sampled test set) | 0.7366 |
+
+### Prevalence Correction
+
+The evaluation dataset was created by retaining all positive samples and
+sampling 25% of negative samples. Therefore, precision and other
+prevalence-sensitive metrics on the sampled test set do not directly
+represent real-world performance.
+
+After correcting for the original class prevalence:
+
+- Precision: approximately 0.07
+- HSS: approximately 0.11
+
+These corrected values better reflect performance under the original
+class distribution.
